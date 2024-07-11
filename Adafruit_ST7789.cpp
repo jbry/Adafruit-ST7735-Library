@@ -128,43 +128,67 @@ void Adafruit_ST7789::init(uint16_t width, uint16_t height, uint8_t mode) {
   setRotation(0);
 }
 
+void Adafruit_ST7789::setRotation(uint8_t m) {
+  setRotation(m,false);
+}
+
 /**************************************************************************/
 /*!
     @brief  Set origin of (0,0) and orientation of TFT display
     @param  m  The index for rotation, from 0-3 inclusive
 */
 /**************************************************************************/
-void Adafruit_ST7789::setRotation(uint8_t m) {
+void Adafruit_ST7789::setRotation(uint8_t m, bool flip) {
   uint8_t madctl = 0;
 
   rotation = m & 3; // can't be higher than 3
 
   switch (rotation) {
   case 0:
-    madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_MY | ST77XX_MADCTL_RGB;
+    if (flip) {
+      madctl = ST77XX_MADCTL_MY | ST77XX_MADCTL_RGB;
+    } else {
+      madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_MY | ST77XX_MADCTL_RGB;
+    }
     _xstart = _colstart;
     _ystart = _rowstart;
     _width = windowWidth;
     _height = windowHeight;
     break;
   case 1:
-    madctl = ST77XX_MADCTL_MY | ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
-    _xstart = _rowstart;
-    _ystart = _colstart2;
+    if (flip) {
+      madctl = ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
+      _xstart = _rowstart2;
+      _ystart = _colstart2;
+    } else {
+      madctl = ST77XX_MADCTL_MY | ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
+      _xstart = _rowstart;
+      _ystart = _colstart;
+    }
     _height = windowWidth;
     _width = windowHeight;
     break;
   case 2:
-    madctl = ST77XX_MADCTL_RGB;
+    if (flip) {
+      madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_RGB;
+    } else {
+      madctl = ST77XX_MADCTL_RGB;
+    }
     _xstart = _colstart2;
     _ystart = _rowstart2;
     _width = windowWidth;
     _height = windowHeight;
     break;
   case 3:
-    madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
-    _xstart = _rowstart2;
-    _ystart = _colstart;
+    if (flip) {
+      madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_MY | ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
+      _xstart = _rowstart;
+      _ystart = _colstart;
+    } else {
+      madctl = ST77XX_MADCTL_MX | ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
+      _xstart = _rowstart2;
+      _ystart = _colstart2;
+    }
     _height = windowWidth;
     _width = windowHeight;
     break;
